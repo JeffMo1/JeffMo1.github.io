@@ -1,0 +1,123 @@
+<html>
+  <head>
+    <style>
+      canvas { float:left;background-color: #ebfdff; }
+      #controls { float:left; }
+      #controls label { display:inline-block;padding-left:10px;width:70px; }
+      #controls label.display { width:40px; }
+      #hue-delta-swatch, #bg-hue-delta-swatch { display:inline-block;margin-left:5px;width:15px;height:15px; }
+    </style>
+  </head>
+  <body>
+    <div>
+      <canvas id="myCanvas" width="1000" height="500"></canvas>
+      <div id="controls">
+        <div>
+          <label name="rule-number">Rule</label>
+          <input type="range" id="rule-number" name="rule-number" min="0" max="255" value="30" onchange="updateRuleNumber()">
+          <label id="rule-number-display" class="display"></label>
+        </div>
+        <div>
+          <label name="seeds-number">Seeds</label>
+          <input type="range" id="seeds-number" name="seeds-number" min="1" max="50" value="1" onchange="updateSeedsNumber()">
+          <label id="seeds-number-display" class="display"></label>
+        </div>
+        <div>
+          <label name="hue-delta">Hue <i>v</i></label>
+          <input type="range" id="hue-delta" name="hue-delta" min="0" max="100" onchange="updateHueDelta()">
+          <label id="hue-delta-display" class="display"></label>
+          <span id="hue-delta-swatch"></span>
+        </div>
+        <div>
+          <label name="bghue-delta">BG Hue <i>v</i></label>
+          <input type="range" id="bg-hue-delta" name="bg-hue-delta" min="0" max="100" onchange="updateBgHueDelta()">
+          <label id="bg-hue-delta-display" class="display"></label>
+          <span id="bg-hue-delta-swatch"></span>
+        </div>
+      </div>
+    </div>
+    <script>
+      function plotXY(ctx, x, y) {
+        ctx.fillRect(x, y, 1, 1); 
+      }
+      function drawRowOfCells(ctx, cells, y) {
+        var i;
+        for (i=0; i<cells.length; i++) {
+          if (cells[i] == 1) { plotXY(ctx, i, y) }
+        }
+      }
+      function rule(ruleNumber, left, me, right) {
+        var bitSelector = left*4 + me*2 + right;
+        return((ruleNumber >> bitSelector) & 1);
+      }
+      function updateCells(cells) {
+        var temps = [];
+
+        for (i=0; i<cells.length; i++) {
+          left_index = (i + cells.length - 1) % cells.length;
+          right_index = (i + cells.length + 1) % cells.length;
+          temps[i] = rule(ruleNumber, cells[left_index], cells[i], cells[right_index]);
+        }
+        return(temps);
+      }
+      function updateRuleNumber() {
+        ruleNumber = parseInt(document.getElementById('rule-number').value);
+        document.getElementById('rule-number-display').innerHTML = ruleNumber;
+        cells = initialCells();
+      }
+      function updateSeedsNumber() {
+        seedsNumber = parseInt(document.getElementById('seeds-number').value);
+        document.getElementById('seeds-number-display').innerHTML = seedsNumber;
+        cells = initialCells();
+      }
+      function updateHueDelta() {
+        hueDelta = parseInt(document.getElementById('hue-delta').value) / 50.0;
+        document.getElementById('hue-delta-display').innerHTML = hueDelta.toFixed(2);
+      }
+      function updateBgHueDelta() {
+        bgHueDelta = parseInt(document.getElementById('bg-hue-delta').value) / 100.0;
+        document.getElementById('bg-hue-delta-display').innerHTML = bgHueDelta.toFixed(2);
+      }
+      function shiftCanvas(ctx) {
+        var imageData = ctx.getImageData(0, 1, 1000, 499);
+        ctx.putImageData(imageData, 0, 0);
+        var hslString = 'hsl('+ bghue + ',100%,50%)';
+        ctx.fillStyle = hslString;; 
+        document.getElementById('bg-hue-delta-swatch').style.backgroundColor = hslString;
+        ctx.fillRect(0, 499, 1000, 1);
+      }
+      function initialCells() {
+        var cells = [];
+        for (i=0; i<1000; i++) { cells.push(0) }
+        for (i=0; i<seedsNumber; i++) { cells[Math.floor(Math.random() * 1000)] = 1 }
+        return(cells);
+      }
+      function newRow() {
+        ctx.fillStyle = 'hsl('+ hue +',70%,50%)';
+        drawRowOfCells(ctx, cells, 499);
+        shiftCanvas(ctx);
+        hue += hueDelta;
+        if (hue >= 360) { hue -= 360 }
+        bghue += bgHueDelta;
+        if (bghue >= 360) { bghue -= 360 }
+        cells = updateCells(cells);
+      }
+
+      var canvas = document.getElementById("myCanvas");
+      var ctx = canvas.getContext("2d");
+      var hue = 0;
+      var bghue = 180;
+      var ruleNumber; 
+      updateRuleNumber();
+      var seedsNumber;
+      updateSeedsNumber();
+      var hueDelta;
+      updateHueDelta();
+      var bgHueDelta;
+      updateBgHueDelta();
+      var cells = initialCells();
+
+      interval = setInterval(newRow, 30);
+    </script>
+  </body>
+</html>
