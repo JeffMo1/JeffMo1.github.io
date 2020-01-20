@@ -82,7 +82,7 @@
         var imageData = ctx.getImageData(0, 1, 1000, 499);
         ctx.putImageData(imageData, 0, 0);
         var hslString = 'hsl('+ bghue + ',100%,50%)';
-        ctx.fillStyle = hslString;; 
+        ctx.fillStyle = hslString; 
         document.getElementById('bg-hue-delta-swatch').style.backgroundColor = hslString;
         ctx.fillRect(0, 499, 1000, 1);
       }
@@ -93,7 +93,9 @@
         return(cells);
       }
       function newRow() {
-        ctx.fillStyle = 'hsl('+ hue +',70%,50%)';
+        var hslString = 'hsl('+ bghue + ',50%,50%)';
+        ctx.fillStyle = hslString;; 
+        document.getElementById('hue-delta-swatch').style.backgroundColor = hslString;
         drawRowOfCells(ctx, cells, 499);
         shiftCanvas(ctx);
         hue += hueDelta;
