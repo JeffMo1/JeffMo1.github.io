@@ -95,8 +95,8 @@
         return(cells);
       }
       function newRow() {
-        drawRowOfCells(ctx, cells, 499);
         shiftCanvas(ctx);
+        drawRowOfCells(ctx, cells, 499);
         hue += hueDelta;
         if (hue >= 360) { hue -= 360 }
         bghue += bgHueDelta;
