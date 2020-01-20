@@ -41,7 +41,9 @@
         ctx.fillRect(x, y, 1, 1); 
       }
       function drawRowOfCells(ctx, cells, y) {
-        var i;
+        var hslString = 'hsl('+ hue + ',100%,50%)';
+        ctx.fillStyle = hslString;; 
+        document.getElementById('hue-delta-swatch').style.backgroundColor = hslString;
         for (i=0; i<cells.length; i++) {
           if (cells[i] == 1) { plotXY(ctx, i, y) }
         }
@@ -81,7 +83,7 @@
       function shiftCanvas(ctx) {
         var imageData = ctx.getImageData(0, 1, 1000, 499);
         ctx.putImageData(imageData, 0, 0);
-        var hslString = 'hsl('+ bghue + ',100%,50%)';
+        var hslString = 'hsl('+ bghue + ',50%,50%)';
         ctx.fillStyle = hslString; 
         document.getElementById('bg-hue-delta-swatch').style.backgroundColor = hslString;
         ctx.fillRect(0, 499, 1000, 1);
@@ -93,9 +95,6 @@
         return(cells);
       }
       function newRow() {
-        var hslString = 'hsl('+ bghue + ',50%,50%)';
-        ctx.fillStyle = hslString;; 
-        document.getElementById('hue-delta-swatch').style.backgroundColor = hslString;
         drawRowOfCells(ctx, cells, 499);
         shiftCanvas(ctx);
         hue += hueDelta;
