@@ -5,7 +5,12 @@
       #controls { float:left; }
       #controls label { display:inline-block;padding-left:10px;width:70px; }
       #controls label.display { width:40px; }
+      #controls label.total { border-top:1px solid Black;padding-top:2px; }
       #hue-delta-swatch, #bg-hue-delta-swatch { display:inline-block;margin-left:5px;width:15px;height:15px; }
+      .bit { display:inline-block;width:20px;height:20px;border:1px solid Black;text-align:center; }
+      .bit.on { background-color:#555;color:#FFF; }
+      .bit.off { background-color:#FFF;color:#555; }
+      .bit.x { border:1px solid White; }
     </style>
   </head>
   <body>
@@ -33,6 +38,66 @@
           <input type="range" id="bg-hue-delta" name="bg-hue-delta" min="0" max="100" onchange="updateBgHueDelta()">
           <label id="bg-hue-delta-display" class="display"></label>
           <span id="bg-hue-delta-swatch"></span>
+        </div>
+        <div>
+          <label><hr/></label>
+        </div>
+        <div>
+           <label>2<sup>0</sup> = 1</label>
+           <div id="l_bit_0" title="left neighbor">L</div> <div id="c_bit_0" title="self/center">C</div> <div id="r_bit_0" title="right neighbor">R</div>
+           <div class="bit x">=</div> <div id="rule_bit_0" class="bit" title="output for next generation">1</div>
+           <label id="decimal_value_0" class="display"></label>
+        </div>
+        <div>
+           <label>2<sup>1</sup> = 2</label>
+           <div id="l_bit_1" title="left neighbor">L</div> <div id="c_bit_1" title="self/center">C</div> <div id="r_bit_1" title="right neighbor">R</div>
+           <div class="bit x">=</div> <div id="rule_bit_1" class="bit" title="output for next generation">1</div>
+           <label id="decimal_value_1" class="display"></label>
+        </div>
+        <div>
+           <label>2<sup>2</sup> = 4</label>
+           <div id="l_bit_2" title="left neighbor">L</div> <div id="c_bit_2" title="self/center">C</div> <div id="r_bit_2" title="right neighbor">R</div>
+           <div class="bit x">=</div> <div id="rule_bit_2" class="bit" title="output for next generation">1</div>
+           <label id="decimal_value_2" class="display"></label>
+        </div>
+        <div>
+           <label>2<sup>3</sup> = 8</label>
+           <div id="l_bit_3" title="left neighbor">L</div> <div id="c_bit_3" title="self/center">C</div> <div id="r_bit_3" title="right neighbor">R</div>
+           <div class="bit x">=</div> <div id="rule_bit_3" class="bit" title="output for next generation">1</div>
+           <label id="decimal_value_3" class="display"></label>
+        </div>
+        <div>
+           <label>2<sup>4</sup> = 16</label>
+           <div id="l_bit_4" title="left neighbor">L</div> <div id="c_bit_4" title="self/center">C</div> <div id="r_bit_4" title="right neighbor">R</div>
+           <div class="bit x">=</div> <div id="rule_bit_4" class="bit" title="output for next generation">1</div>
+           <label id="decimal_value_4" class="display"></label>
+        </div>
+        <div>
+           <label>2<sup>5</sup> = 32</label>
+           <div id="l_bit_5" title="left neighbor">L</div> <div id="c_bit_5" title="self/center">C</div> <div id="r_bit_5" title="right neighbor">R</div>
+           <div class="bit x">=</div> <div id="rule_bit_5" class="bit" title="output for next generation">1</div>
+           <label id="decimal_value_5" class="display"></label>
+        </div>
+        <div>
+           <label>2<sup>6</sup> = 64</label>
+           <div id="l_bit_6" title="left neighbor">L</div> <div id="c_bit_6" title="self/center">C</div> <div id="r_bit_6" title="right neighbor">R</div>
+           <div class="bit x">=</div> <div id="rule_bit_6" class="bit" title="output for next generation">1</div>
+           <label id="decimal_value_6" class="display"></label>
+        </div>
+        <div>
+           <label>2<sup>7</sup> = 128</label>
+           <div id="l_bit_7" title="left neighbor">L</div> <div id="c_bit_7" title="self/center">C</div> <div id="r_bit_7" title="right neighbor">R</div>
+           <div class="bit x">=</div> <div id="rule_bit_7" class="bit" title="output for next generation">1</div>
+           <label id="decimal_value_7" class="display"></label>
+        </div>
+        <div>
+           <label></label>
+           <div class="bit x">&nbsp;</div>
+           <div class="bit x">&nbsp;</div>
+           <div class="bit x">&nbsp;</div>
+           <div class="bit x">&nbsp;</div>
+           <div class="bit x">&nbsp;</div>
+           <label id="decimal_total" class="display total"></label>
         </div>
       </div>
     </div>
@@ -65,6 +130,22 @@
       function updateRuleNumber() {
         ruleNumber = parseInt(document.getElementById('rule-number').value);
         document.getElementById('rule-number-display').innerHTML = ruleNumber;
+        document.getElementById('decimal_total').innerHTML = ruleNumber;
+        for (i=0; i<8; i++) {
+          var outputBit = document.getElementById('rule_bit_'+i);
+          var decimal = document.getElementById('decimal_value_'+i);
+          var bitValue = (ruleNumber >> i) & 1;
+          outputBit.classList.remove('off', 'on');
+          if (bitValue) { 
+            outputBit.classList.add('on')
+            decimal.innerHTML = 1 << i;
+          }
+          else { 
+            outputBit.classList.add('off')
+            decimal.innerHTML = '';
+          }
+          outputBit.innerHTML = bitValue; 
+        }
         cells = initialCells();
       }
       function updateSeedsNumber() {
@@ -94,6 +175,17 @@
         for (i=0; i<seedsNumber; i++) { cells[Math.floor(Math.random() * 1000)] = 1 }
         return(cells);
       }
+      function setupRuleBreakdown() {
+        for (i=0; i<8; i++) {
+          if (i & 4) { document.getElementById('l_bit_'+i).classList.add('bit', 'on'); }
+          else { document.getElementById('l_bit_'+i).classList.add('bit', 'off'); }
+          if (i & 2) { document.getElementById('c_bit_'+i).classList.add('bit', 'on'); }
+          else { document.getElementById('c_bit_'+i).classList.add('bit', 'off'); }
+          if (i & 1) { document.getElementById('r_bit_'+i).classList.add('bit', 'on'); }
+          else { document.getElementById('r_bit_'+i).classList.add('bit', 'off'); }
+          document.getElementById('rule_bit_'+i).classList.add('bit');
+        }
+      }
       function newRow() {
         shiftCanvas(ctx);
         drawRowOfCells(ctx, cells, 499);
@@ -106,6 +198,7 @@
 
       var canvas = document.getElementById("myCanvas");
       var ctx = canvas.getContext("2d");
+      setupRuleBreakdown();
       var hue = 0;
       var bghue = 180;
       var ruleNumber; 
